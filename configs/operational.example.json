@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "project": {
+    "name": "SYNAPSE-WX",
+    "mode": "experimental",
+    "display_timezone": "Asia/Kolkata"
+  },
+  "storage": {
+    "database_path": "outputs/operational/synapse_wx.sqlite3",
+    "raw_response_directory": "outputs/operational/raw",
+    "export_directory": "outputs/operational/exports"
+  },
+  "geography": {
+    "boundary_path": "datasets/adapt_wx_karnataka_district_boundaries.geojson",
+    "district_id_property": "imd_district_code",
+    "district_name_property": "imd_district",
+    "division_property": "karnataka_division",
+    "sampling": {
+      "grid_spacing_degrees": 0.25,
+      "minimum_points": 5,
+      "maximum_points": 12,
+      "minimum_coverage_fraction": 0.8
+    }
+  },
+  "forecast": {
+    "api_base_url": "https://api.open-meteo.com/v1/forecast",
+    "hourly_variable": "precipitation",
+    "additional_hourly_variables": ["temperature_2m", "wind_speed_10m", "wind_direction_10m"],
+    "wind_speed_unit": "ms",
+    "variable_units": {"temperature_2m": "°C", "wind_speed_10m": "m/s", "wind_direction_10m": "°"},
+    "unit": "mm",
+    "source_timezone": "Asia/Kolkata",
+    "daily_accumulation_start_hour": 0,
+    "target_start_day_offset": 1,
+    "required_hours_per_day": 24,
+    "lead_days": [1, 2, 3, 4, 5, 6],
+    "request_timeout_seconds": 35,
+    "request_attempts": 5,
+    "retry_backoff_seconds": 15,
+    "maximum_retry_wait_seconds": 60,
+    "request_interval_seconds": 2,
+    "request_cache_ttl_minutes": 60,
+    "request_cache_directory": "outputs/operational/request-cache",
+    "coordinate_batch_size": 50,
+    "user_agent": "SYNAPSE-WX/2.0",
+    "sources": [
+      {"id": "gfs", "label": "GFS", "provider": "open_meteo", "api_model": "ncep_gfs_seamless", "source_class": "physical_nwp", "enabled": true},
+      {"id": "ifs_hres", "label": "IFS HRES", "provider": "open_meteo", "api_model": "ecmwf_ifs", "source_class": "physical_nwp", "enabled": true},
+      {"id": "aifs", "label": "AIFS", "provider": "open_meteo", "api_model": "ecmwf_aifs025_single", "source_class": "ai", "enabled": true}
+    ]
+  },
+  "ensemble": {"enabled": true, "id": "gfs_ens", "label": "GFS ENS 0.25 degree", "provider": "open_meteo", "api_base_url": "https://ensemble-api.open-meteo.com/v1/ensemble", "api_model": "ncep_gefs025_ensemble_mean", "source_class": "ensemble", "blend_role": "display_only_not_in_locked_blend", "mean_variable": "precipitation", "spread_variable": "precipitation_spread", "spread_aggregation": "root_sum_square_hourly_standard_deviation_independence_proxy"},
+  "blend": {
+    "method": "rolling_inverse_mae",
+    "rolling_window_days": 60,
+    "inverse_mae_power": 2.0,
+    "mae_floor_mm": 0.1,
+    "minimum_sources_to_publish": 2,
+    "no_history_fallback": "equal_weight"
+  },
+  "routine": {"issue_hours_ist": [6], "expected_district_count": 31, "health_log_path": "outputs/operational/logs/routine-health.jsonl"},
+  "synop_forecast_archive": {
+    "enabled": true,
+    "stations": [
+      {"station_id": "43295", "name": "Bengaluru", "latitude": 12.966667, "longitude": 77.583333}
+    ]
+  },
+  "xgboost": {
+    "enabled": true,
+    "training_frozen": false,
+    "frozen_artifact_version": null,
+    "frozen_feature_schema_sha256": null,
+    "lead_days": 1,
+    "source_ids": ["gfs", "ifs_hres", "aifs"],
+    "artifact_directory": "outputs/operational/models/day1-xgboost",
+    "predicted_error_floor_mm": 0.1,
+    "random_seed": 81,
+    "train_start": "2025-10-01",
+    "train_end": "2025-12-31",
+    "validation_start": "2026-01-01",
+    "validation_end": "2026-04-30",
+    "held_out_start": "2026-05-01",
+    "held_out_end": "2026-08-31",
+    "parameter_candidates": [
+      {"n_estimators": 160, "max_depth": 3, "learning_rate": 0.05, "subsample": 0.9, "colsample_bytree": 0.9},
+      {"n_estimators": 240, "max_depth": 4, "learning_rate": 0.04, "subsample": 0.9, "colsample_bytree": 0.9},
+      {"n_estimators": 120, "max_depth": 2, "learning_rate": 0.08, "subsample": 1.0, "colsample_bytree": 1.0}
+    ]
+  },
+  "archive": {
+    "previous_runs_api_base_url": "https://previous-runs-api.open-meteo.com/v1/forecast",
+    "single_runs_api_base_url": "https://single-runs-api.open-meteo.com/v1/forecast",
+    "raw_response_directory": "outputs/operational/archive/raw",
+    "request_cache_directory": "outputs/operational/archive/request-cache",
+    "skill_classification": "archived_previous_run_with_observation",
+    "reconstruction_mode": "archived_forecast_reconstruction",
+    "reconstruction_lead_days": 1,
+    "run_cycle_hours_utc": [0, 6, 12, 18],
+    "run_availability_lag_hours": 6,
+    "run_identity_status": "archived_single_run_exact",
+    "single_run_forecast_days": 2
+  },
+  "verification": {
+    "provider": "IMD",
+    "classification": "observation",
+    "unit": "mm",
+    "date_column": "date",
+    "district_id_column": "district_code",
+    "value_column": "imd_actual_mm",
+    "availability_time_column": "available_at_utc",
+    "reject_unknown_districts": true
+  },
+  "imd_realtime": {
+    "provider": "India Meteorological Department, Pune",
+    "product": "real-time daily rainfall 0.25-degree binary grid",
+    "download_url": "https://www.imdpune.gov.in/cmpg/Realtimedata/Rainfall/rain.php",
+    "request_field": "rain",
+    "request_date_format": "%d%m%Y",
+    "latest_available_day_offset": 1,
+    "user_agent": "SYNAPSE-WX/2.0",
+    "request_timeout_seconds": 35,
+    "request_attempts": 3,
+    "retry_backoff_seconds": 2,
+    "raw_directory": "outputs/operational/imd/raw",
+    "district_csv_directory": "outputs/operational/imd/district",
+    "grid": {
+      "longitude_count": 135,
+      "latitude_count": 129,
+      "longitude_start": 66.5,
+      "latitude_start": 6.5,
+      "spacing_degrees": 0.25,
+      "value_bytes": 4,
+      "byte_order": "little",
+      "missing_value": -999.0,
+      "minimum_valid_coverage_fraction": 0.8
+    }
+  },
+  "historical_bootstrap": {
+    "path": "datasets/synapse_wx_statewide_forecast_synoptic_master.csv",
+    "date_column": "date",
+    "district_id_column": "district_code",
+    "verification_column": "imd_actual_mm",
+    "verification_provider": "IMD",
+    "verification_classification": "observation",
+    "verification_availability_lag_hours": 120,
+    "lead_days": 1,
+    "eligible_start_date": "2025-10-01",
+    "eligible_end_date": "2026-08-31",
+    "expected_district_count": 31,
+    "required_coverage_status": "pass",
+    "coverage_status_columns": {
+      "gfs": "gfs_coverage_status",
+      "ifs_hres": "ifs_hres_coverage_status",
+      "aifs": "aifs_coverage_status"
+    },
+    "source_columns": {
+      "gfs": "gfs_rain_mm",
+      "ifs_hres": "ifs_hres_rain_mm",
+      "aifs": "aifs_rain_mm"
+    }
+  }
+}

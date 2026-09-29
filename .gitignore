@@ -1,0 +1,27 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env*
+*.sqlite
+*.sqlite3
+*.db
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/public/decoded_synop.csv
+
+# Raw API payloads and generated evaluation artifacts
+outputs/
+datasets/*.csv
+_review/
+inventory_audit.json
+imd_zip_audit.json
+DATA_INVENTORY.md
+!docs/DATA_INVENTORY.md
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

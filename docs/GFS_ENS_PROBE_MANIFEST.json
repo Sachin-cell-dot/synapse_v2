@@ -1,0 +1,38 @@
+{
+  "probe_date_ist": "2026-09-26",
+  "provider": "NOAA via Open-Meteo Ensemble Mean API",
+  "endpoint": "https://ensemble-api.open-meteo.com/v1/ensemble",
+  "model_id": "ncep_gefs025_ensemble_mean",
+  "source_class": "ensemble",
+  "documented_native_grid": "0.25 degree (~25 km), distinct from deterministic sampling grids",
+  "ensemble_semantics": "31-member GEFS mean and member standard deviation supplied by the ensemble-mean product",
+  "locations": [
+    {"name": "Bengaluru Urban", "requested": [12.9716, 77.5946], "returned_grid_point": [13.0, 77.5]},
+    {"name": "Mangaluru coastal proxy", "requested": [12.8438, 74.8806], "returned_grid_point": [12.75, 75.0]}
+  ],
+  "live_response": {
+    "request_url": "https://ensemble-api.open-meteo.com/v1/ensemble?latitude=12.9716%2C12.8438&longitude=77.5946%2C74.8806&hourly=precipitation%2Cprecipitation_spread&models=ncep_gefs025_ensemble_mean&timezone=Asia%2FKolkata&precipitation_unit=mm&forecast_days=7",
+    "raw_sha256": "7c79e74215bcbd6b665b15a98276d1b097861270345ac8283ea85b18fce9a773",
+    "bytes": 10410,
+    "variables": ["time", "precipitation", "precipitation_spread"],
+    "units": {"precipitation": "mm", "precipitation_spread": "mm"},
+    "time_range": ["2026-09-25T00:00", "2026-10-01T23:00"],
+    "hourly_rows_per_location": 168,
+    "missing_values_per_variable_per_location": 0
+  },
+  "historical_response": {
+    "requested_2026_03_15": "HTTP 400: allowed start reported by API as 2026-06-24",
+    "successful_date": "2026-06-24",
+    "request_url": "https://ensemble-api.open-meteo.com/v1/ensemble?latitude=12.9716%2C12.8438&longitude=77.5946%2C74.8806&hourly=precipitation%2Cprecipitation_spread&models=ncep_gefs025_ensemble_mean&timezone=Asia%2FKolkata&precipitation_unit=mm&start_date=2026-06-24&end_date=2026-06-24",
+    "raw_sha256": "2d1d4bf954f223bcd6006aa1dae4fbf24d1d41581a3ffd6d38a3dd92a170fbbf",
+    "bytes": 2060,
+    "hourly_rows_per_location": 24,
+    "missing_values_per_variable_per_location": 0,
+    "conclusion": "Actual response confirms availability on 2026-06-24, but not enough chronology for the frozen October 2025-August 2026 three-source evaluation. Four-source skill remains unvalidated."
+  },
+  "important_limitations": [
+    "The ensemble is display_only_not_in_locked_blend.",
+    "The stored daily spread is a labelled root-sum-square proxy of hourly member standard deviations, not a calibrated probability and not an exact daily-total member spread.",
+    "Latest endpoint initialization time is not exposed and is not inferred from retrieval time."
+  ]
+}

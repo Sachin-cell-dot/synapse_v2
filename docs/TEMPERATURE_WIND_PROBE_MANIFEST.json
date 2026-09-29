@@ -1,0 +1,16 @@
+{
+  "probe_date_utc": "2026-09-26",
+  "coordinate": {"latitude": 12.9716, "longitude": 77.5946, "label": "Bengaluru bounded probe"},
+  "endpoint": "https://api.open-meteo.com/v1/forecast",
+  "timezone": "Asia/Kolkata",
+  "requested_wind_speed_unit": "ms",
+  "requested_fields": ["temperature_2m", "wind_speed_10m", "wind_direction_10m", "wind_gusts_10m"],
+  "responses": [
+    {"model": "ncep_gfs_seamless", "sha256": "cb440d6ee61121c9f829b8f97b2f45775b59977e996de8d72ec8736465c0e94b", "rows": 48, "units": {"temperature_2m": "°C", "wind_speed_10m": "m/s", "wind_direction_10m": "°", "wind_gusts_10m": "m/s"}, "missing": {"temperature_2m": 0, "wind_speed_10m": 0, "wind_direction_10m": 0, "wind_gusts_10m": 0}},
+    {"model": "ecmwf_ifs", "sha256": "fb3cb974c240657d0fd0eae8297acad80d41c03c40c84f02908d073199cd3d2e", "rows": 48, "units": {"temperature_2m": "°C", "wind_speed_10m": "m/s", "wind_direction_10m": "°", "wind_gusts_10m": "m/s"}, "missing": {"temperature_2m": 0, "wind_speed_10m": 0, "wind_direction_10m": 0, "wind_gusts_10m": 0}},
+    {"model": "ecmwf_aifs025_single", "sha256": "4b9c3ae2b62fca4cdff5e7fabaa9d5a13dd19557c4cb20b4ab8947be569119a4", "rows": 48, "units": {"temperature_2m": "°C", "wind_speed_10m": "m/s", "wind_direction_10m": "°", "wind_gusts_10m": "m/s"}, "missing": {"temperature_2m": 0, "wind_speed_10m": 0, "wind_direction_10m": 0, "wind_gusts_10m": 48}}
+  ],
+  "selected_fields": ["temperature_2m", "wind_speed_10m", "wind_direction_10m"],
+  "excluded_fields": {"wind_gusts_10m": "unsupported across the locked three-source contract because AIFS returned all nulls"},
+  "verification_status": "forecast_only_no_statewide_district_observations"
+}
